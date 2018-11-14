@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>The Nearest Train</title>
+ 
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+        <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+ 
+        <script>
+            var options;
+            
+            window.onload = function()
+            {
+                init();
+            }
+
+            function init()
+            {
+                document.getElementById('btnDirection').style.display = "block";
+                document.getElementById('btnDirection1').style.display = "block";
+            }
+            
+
+      
+            function getMyDirection()
+{
+var dat = new Date()
+dat = dat.getFullYear()+ "-" + (dat.getMonth()+1) + "-" + dat.getDate();
+console.log(dat);
+    
+    var url = "https://api.rasp.yandex.net/v1.0/search/?apikey=c1c1ee53-2274-4555-bae6-4cf0a0dcd169&format=json&from=2004764&to=2005000&lang=ru&page=1&system=express&transport_types=suburban";
+    url += "&date=" + dat;    
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = process_Result;
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+ }
+            function getMyDirection_1()
+{
+var dat = new Date()
+dat = dat.getFullYear()+ "-" + (dat.getMonth()+1) + "-" + dat.getDate();
+console.log(dat);
+    
+    var url = "https://api.rasp.yandex.net/v1.0/search/?apikey=c1c1ee53-2274-4555-bae6-4cf0a0dcd169&format=json&from=2005000&to=2004764&lang=ru&page=1&system=express&transport_types=suburban";    
+    url += "&date=" + dat;    
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = process_Result;
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+ }
+    
+     function process_Result()
+    {
+        var out="";
+        if(xmlhttp.readyState==4){
+            var theJSON = xmlhttp.responseText;
+            var result = JSON.parse(theJSON);
+            var resultArr = result.threads;
+            
+           for(var x = 0; x < resultArr.length; x++)
+                {
+            var hour_x = new Date(result.threads[x].departure);
+            var hour_c = new Date();
+    //                console.log(hour_x, hour_c);
+            if(hour_x>=hour_c){
+                out += "<h3>"+"B "+ resultArr[x].to.title +" " + resultArr[x].departure + "</h3>";
+                    }
+                  }
+              }
+         document.getElementById('result').innerHTML = out;
+        }
+            
+            function failure(message)
+            {
+                alert("Error:" + message.message);
+            }
+            
+            function clearScreen()
+            {
+                document.getElementById('timetable').innerHTML = "";
+                document.getElementById('timetable').style.backgroundColor = "white";
+                document.getElementById('result').innerHTML = "";
+            }
+    </script>
+    
+        <style>
+        #container  {
+            margin: 5px;   
+        }
+        
+        #btnDirection    {
+            display: none;  
+        }
+        #timetable {
+            height: 400px;
+            width: 100%
+        }
+    </style>
+    
+    </head>
+    
+    <body>
+        
+        <h1 align="center">The Nearest Train</h1>
+        <div id="container">
+            <button id="btnDirection" onclick="getMyDirection()">from NATI</button>
+            <button id="btnDirection1" onclick="getMyDirection_1()">to NATI</button> 
+            <button id="btnClear" onclick="clearScreen()">Clear</button>
+            <div id="result"></div>
+            <div id="timetable"></div>
+            
+        </div>
+        
+    </body>
+</html>
